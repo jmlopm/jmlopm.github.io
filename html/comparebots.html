@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load plotly.js into the DOM -->
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script src="javascript/module/plotly-latest.min.js"></script>
+
+<title>Asymob</title>
+<style>
+body {
+	font-family: "Lato", sans-serif;
+}
+
+th, td, p, input, h3 {
+	font: 15px 'Segoe UI';
+}
+
+table, th, td {
+	border: solid 1px #ddd;
+	border-collapse: collapse;
+	padding: 2px 3px;
+	text-align: center;
+	width: 50%;
+}
+
+th {
+	font-weight: bold;
+}
+
+.left-chart{
+    float: left;
+    width: 50px;
+    width: 40%;
+}
+
+.middle{
+    float: left;
+	width: 50 px;
+	width: 20%;
+	display: table;
+}
+
+.right-chart{
+    float: right;
+    width: 50px;
+    width: 40%;
+}
+
+.sidenav {
+	height: 100%;
+	width: 200px;
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	background-color: #111;
+	overflow-x: hidden;
+	padding-top: 20px;
+}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a, .dropdown-btn {
+	padding: 6px 8px 6px 16px;
+	text-decoration: none;
+	font-size: 20px;
+	color: #818181;
+	display: block;
+	border: none;
+	background: none;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+	outline: none;
+}
+
+/* On mouse-over */
+.sidenav a:hover, .dropdown-btn:hover {
+	color: #f1f1f1;
+}
+
+/* Main content */
+.main {
+	margin-left: 200px; /* Same as the width of the sidenav */
+	font-size: 20px; /* Increased text to enable scrolling */
+	padding: 0px 10px;
+}
+
+/* Add an active class to the active dropdown button */
+.active {
+	background-color: green;
+	color: white;
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.dropdown-container {
+	display: none;
+	background-color: #262626;
+	padding-left: 8px;
+}
+
+/* Optional: Style the caret down icon */
+.fa-caret-down {
+	float: right;
+	padding-right: 8px;
+}
+
+/* Some media queries for responsiveness */
+@media screen and (max-height: 450px) {
+	.sidenav {
+		padding-top: 15px;
+	}
+	.sidenav a {
+		font-size: 18px;
+	}
+}
+
+.float-container {
+	border: 3px solid #fff;
+	padding: 20px;
+}
+
+.float-child {
+	width: 50%;
+	float: left;
+	padding: 20px;
+	border: 2px solid red;
+}
+</style>
+</head>
+<body>
+	<div class="sidenav">
+		<a href="home.html">Home</a> <a href="metrics.html">Metrics</a>
+		<button class="dropdown-btn">
+			Bots <i class="fa fa-caret-down"></i>
+		</button>
+		<div class="dropdown-container">
+			<a href="uploadbot.html"> Upload bot</a> 
+			<a href="measurebot.html">Measure</a>
+			<a href=comparebots.html>Compare bots</a>
+			<a href=botquery.html> Make query</a>
+			<a href=stats.html> Global stats</a>
+			<a href=compareversions.html> Compare versions</a>
+		</div>
+		<a href="about.html">About</a>
+	</div>
+
+	<div
+		style="margin-left: 25%; padding: 1px 16px; height: 1000px; margin-bottom: 10%">
+		
+		<div style="width:80%">
+			<h1>Select bots</h1>
+			<div class="left-chart">
+				<p>Available bots to compare</p>
+				<select multiple size="5" id=botSelector style="width:80%"></select>
+			</div>
+		
+			<div class="middle">
+			<br>
+			<br>
+			<br>
+			<input type="button" value="Add"
+				onclick='addBots()'> <br> <br><input type="button"
+				value="Remove" onclick='removeBots()'> 
+			</div>
+			
+			<div class="right-chart">
+				<p>Selected bots</p>
+				<select multiple size="5" id=selectedBots style="width:80%"></select>
+			</div>
+		</div>
+			
+		
+		<br>
+		<div id="selectmetrics" style="float: left">
+			<h1>Select metrics</h1>
+			<p></p>
+			<input type="checkbox" name=bot value="ENT"> <label
+				for="botMetrics[0]"> Number of entities</label><br> <input
+				type="checkbox" name=bot value="INT"> <label
+				for="botMetrics[1]"> Number of intents</label><br> <input
+				type="checkbox" name=bot value="NL"> <label
+				for="botMetrics[2]"> Number of languages</label><br> <input
+				type="checkbox" name=bot value="FLOW"> <label
+				for="botMetrics[3]"> Number of flows</label><br> <input
+				type="checkbox" name=bot value="CNF"> <label
+				for="botMetrics[4]"> Bot confusing phrases</label><br> <input
+				type="checkbox" name=bot value="LPE"> <label
+				for="botMetrics[5]"> Average literal per entity</label><br> <input
+				type="checkbox" name=bot value="SPL"> <label
+				for="botMetrics[6]"> Average synonym per entity</label><br> <input
+				type="checkbox" name=bot value="WL"> <label
+				for="botMetrics[7]"> Average entity word length</label><br> <input
+				type="checkbox" name=bot value="SPL"> <label
+				for="botMetrics[8]"> Average synonym per entity</label><br> <input
+				type="checkbox" name=bot value="FACT"> <label
+				for="botMetrics[9]"> Average actions per conversation entry
+				point</label><br> <input type="checkbox" name=bot value="MFL">
+			<label for="botMetrics[10]"> Maximum lenght of the
+				conversation flow</label><br> <input type="checkbox" name=bot
+				value="FLOW2"> <label for="botMetrics[11]"> Average
+				numer of conversation entry points</label><br> <input type="checkbox"
+				name=bot name="botMetrics[12]" value="PATH"> <label
+				for="botMetrics[13]"> Number of exit points</label><br> <br>
+			<input type="button" value="Compare metrics" onclick='compare()'>
+
+			<div id='graphs'></div>
+			<div id='breakdown'></div>
+			<input type="button" id=statData value="Plot stats"
+				onclick='plotFullGraph()'> <input type="button"
+				id=metricData value="Remove stats" onclick='plotMetricGraph()'
+				style="display: none">
+			<p id='demo'></p>
+			<!-- style="display:
+		<p>BOT METRICS</p>
+		<table id="botmetrics" > 
+			<tr>
+				<th>Metrics</th>
+				<th> Value</th>
+			</tr>
+		</table>	
+		 none" -->
+
+
+		</div>
+
+	</div>
+	<script src="javascript/core/coreScript.js"></script>
+	<script src="javascript/module/table.js"></script>
+	<script src="javascript/pages/comparebots.js"></script>
+</body>
+</html>
